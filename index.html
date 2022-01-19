@@ -1,1 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualisation de données</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div>
+        <button onclick="afficher()">Afficher</button>
+    </div>
+    <div class="graphs">
+        <div class="graph-1">
+            <!-- <canvas id="canvas"></canvas>--> 
+            <canvas id="pie-chart"></canvas>
+          </div>
+          <div class="graph-1">
+              <!-- <canvas id="canvas"></canvas>--> 
+            <canvas id="bar-chart"></canvas>
+          </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+    <script>
 
+        var dataVote= [];
+        var datalabels = [];
+        var colorTable = [];
+        var ratingTable = [];
+        var ratingColors = [];
+        fetch("Film.json")
+        .then(response => {
+            return response.json();
+        })
+        .then(jsondata => {
+                for(let element of jsondata) {
+                    var numberVote = parseFloat(element.imdbVotes.toString())
+                    if(!isNaN(numberVote)) {
+                        dataVote.push(numberVote); // data
+                        var randomColor = Math.floor(Math.random()*16777215).toString(16);
+                        colorTable.push("#"+randomColor) // colors
+                    }
+
+                    datalabels.push(element.Title); // labels
+
+                    // Rating graph
+                    ratingTable.push(element.imdbRating);
+                    var randomColors2 = Math.floor(Math.random()*16777215).toString(16);
+                    ratingColors.push("#"+randomColors2)
+                }
+                            
+            }
+        );
+
+            function afficher() {
+                myChart.data.labels = datalabels;
+                myChart.data.datasets[0].data = dataVote;
+                myChart.data.datasets[0].backgroundColor= colorTable;
+                myChart.update();
+
+                barChart.data.labels = datalabels;
+                barChart.data.datasets[0].data = ratingTable;
+                barChart.data.datasets[0].backgroundColor= ratingColors;
+                barChart.update();
+            }
+
+       // console.log(dataVote)
+       // console.log(datalabels)
+       // console.log(colorTable)
+        
+        const myChart =  new Chart(document.getElementById("pie-chart"), {
+            type: 'pie',
+            data: {
+                labels: ["1","2","3"], // fichiers
+                datasets: [{
+                    label: "Films (Votes imdb)",
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)'], // tableau de couleur au nombre de fichier
+                    data: [100,200,300] // tableau de nombre de mots clès
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: 'Le vote sur quelques films sur imdb'
+                }
+            }
+        });
+
+
+        const barChart = new Chart(document.getElementById("bar-chart"), {
+    type: 'bar',
+    data: {
+        labels: ["s","l","l","m","n"],
+        datasets: [{
+            label: 'My First Dataset',
+            data: [65, 59, 80, 81, 56, 55, 40],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 205, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(201, 203, 207, 0.2)'
+            ],
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+
+    </script>
+</body>
+</html>
